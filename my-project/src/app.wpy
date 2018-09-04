@@ -1,0 +1,73 @@
+<style lang="less">
+.container {
+  height: 100%;
+  /*display: flex;*/
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+.btn{
+  width: 60%;
+  border-radius: 5px;
+  margin: 20px auto;
+  padding-top: 2px;
+  font-size: 14px;
+  background-color: rgb(32, 158, 133);
+  color: white;
+  overflow: hidden;
+  height: 40px;
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/index',
+      'pages/jifen',
+      'pages/rank'
+    ],
+    tabBar: {
+      "color": "#dddddd",
+      "selectedColor": "#3cc51f",
+      "borderStyle": "black",
+      "backgroundColor": "#ffffff",
+      list: [{
+        pagePath: 'pages/index',
+        iconPath: "assets/index.png",
+        selectedIconPath: "assets/index@active.png",
+        text: '赛程'
+      }, {
+        pagePath: 'pages/jifen',
+        iconPath: "assets/news.png",
+        selectedIconPath: "assets/news@active.png",
+        text: '积分'
+      },{
+        pagePath: 'pages/rank',
+        iconPath: "assets/more.png",
+        selectedIconPath: "assets/more@active.png",
+        text: '排行榜'
+      }]
+    },
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: 'News',
+      navigationBarTextStyle: 'black'
+    }
+  }
+
+  globalData = {
+    userInfo: null
+  }
+
+  constructor () {
+    super()
+    this.use('requestfix')
+  }
+}
+</script>

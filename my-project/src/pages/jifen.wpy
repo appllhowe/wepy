@@ -1,0 +1,202 @@
+<style lang="less">
+
+  .container{
+    background-color: #18191b;
+    color: #ddd;
+
+  }
+
+  .rank-list {
+    width: 100%;
+    /*display: flex;*/
+    font-size: 30 rpx;
+
+    .group {
+      padding: 0 10 rpx;
+
+      + .group {
+        border-left: 1 rpx solid #ccc;
+
+      }
+
+      .title {
+        border-bottom: 1px solid #ccc;
+        width: 100%;
+        height: 68rpx;
+        line-height: 68rpx;
+        text-indent: 20rpx;
+        background: #0c0f14;
+        font-size: 28rpx;
+        color: #fff;
+      }
+      .col{
+
+        text-align: center;
+        height: 54rpx;
+        border-bottom: 1rpx solid #080a0d;
+        color: #5f6064;
+      }
+
+      .list {
+        font-size:30rpx;
+        text-align: center;
+
+        .header, .item {
+          display: flex;
+          height: 54rpx;
+          line-height: 54rpx;
+          border-bottom: 1rpx solid #080a0d;
+
+          > view {
+            flex: 1;
+
+            &.team {
+              flex-direction: column;
+              position: relative;
+              padding-left: 130rpx;
+              text-align: left;
+
+              text {
+                height: 40rpx;
+                display: inline-block;
+              }
+
+              .icon{
+                position: absolute;
+                left: 70rpx;
+                top: 7rpx;
+                background-size: 40rpx;
+                height: 40rpx;
+                width: 40rpx;
+                display: inline-block;
+              }
+
+            }
+
+          }
+
+        }
+      }
+    }
+  }
+
+  .match {
+    width: 100%;
+    display: flex;
+
+  .item {
+    flex: 1;
+    display: block;
+    float: left;
+    width: 50%;
+    height: 80rpx;
+    line-height: 80rpx;
+    font-size: 28rpx;
+    color: #5f6064;
+    text-align: center;
+    border-radius:0;
+
+
+    &.active{
+       background: #684e16;
+       color: #ffc65b;
+     }
+
+    /*&:first-child {*/
+    /*flex: 2;*/
+    /*}*/
+  }
+
+  }
+
+
+</style>
+<template>
+  <view class="container">
+
+
+    <view class="match">
+      <button class="item {{matchIndex == index ? 'active' : ''}}" wx:for-key="index" wx:for="{{matchList}}"
+              @tap="clickBtn({{index}})">{{item.name}}
+      </button>
+    </view>
+
+    <view class="wrap rank-list">
+      <view class="group" wx:for="{{pageData.team[matchList[matchIndex].round]}}" wx:for-item="item">
+        <view class="title">{{item.letter}}</view>
+        <view class="list">
+          <view class="header">
+            <view class="col">排名</view>
+            <view class="col team">战队</view>
+            <view class="col">胜负</view>
+            <view class="col">小分</view>
+          </view>
+
+          <view class="item" wx:for="{{item.list}}" wx:key="index" wx:for-item="rankItem">
+            <view><span class="rank">{{index + 1}}</span></view>
+            <view class="team logo-team">
+              <image class="icon" src="{{rankItem.team_image}}"/>
+              <text>{{rankItem.team_short_name}}</text>
+            </view>
+            <view>{{rankItem.win}}<span class="split">-</span>{{rankItem.los}}</view>
+            <view>{{rankItem.win_lose}}</view>
+          </view>
+
+        </view>
+      </view>
+
+    </view>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '赛事积分',
+      window: {
+        enablePullDownRefresh: true
+      }
+    }
+
+    data = {
+      matchIndex: 0,
+      matchList: [
+        {id: 62, name: 'LPL春季赛', round: 140},
+        {id: 63, name: 'LCK春季赛', round: 142},
+      ],
+      pageData: {},
+      isLoadingMore: false,
+      currentPage: 1,
+      info: ''
+    }
+
+    methods = {
+      clickBtn (index) {
+        this.matchIndex = index
+        this.loadList(this.matchList[index].id)
+      }
+    }
+
+    onLoad() {
+      this.loadList(62)
+    }
+
+    loadList(id) {
+      wx.showLoading({
+        title: '加载中'
+      })
+      wx.request({
+        url: `https://kk.zengqi.me/tournament/${id}.json`,
+        success: (res) => {
+          console.log(res)
+          this.pageData = res.data.data
+          this.$apply()
+          wx.hideLoading()
+        }
+      })
+    }
+  }
+</script>
